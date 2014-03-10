@@ -1,0 +1,72 @@
+#!/usr/bin/perl
+
+use strict;
+use warnings;
+
+use POSIX;
+
+my $path = '/var/sysmand';
+
+my $echo = '/bin/echo';
+my $cp = '/bin/cp';
+my $perl = '/usr/bin/perl';
+my $rm = '/bin/rm';
+
+&main;
+
+sub main
+{
+	umask 022;
+	chdir '/';
+
+	close STDIN;
+	close STDOUT;
+	close STDERR;
+
+	my $pid = fork;
+	if ($pid) { exit; }
+
+	setsid;
+	system $echo . ' ' . $$ . ' > /var/run/sysmand.pid';
+
+	while (1)
+	{
+		if (-e $path . '/run/sysmand.lock') { sleep 1; next; }
+
+		my @scripts = &read_dir_and_filter($path . '/script-enabled/', '\.pl$');
+		if (0 == scalar @scripts) { sleep 1; next; }
+
+		system $cp  . ' /dev/null ' . $path . '/run/sysmand.lock';
+
+		my @scripts_sorted = sort @scripts;
+		foreach my $script (@scripts_sorted)
+		{
+			system $perl . ' ' . $path . '/script-enabled/' . $script;
+			system $rm . ' -rf ' . $path . '/script-enabled/' . $script;
+			sleep 1;
+		}
+
+		system $rm . ' -rf ' . $path . '/run/sysmand.lock';
+		sleep 1;
+	}
+}
+
+sub read_dir_and_filter
+{
+	my $path = $_[0];
+	my $filter = $_[1];
+
+	opendir(my $D, $path);
+	my @files = readdir $D;
+	closedir $D;
+
+	my @filtered = ();
+	foreach my $file (@files)
+	{
+		if ($file =~ /^\./) { next; }
+		if ($file =~ /$filter/) { push @filtered, $file; }
+	}
+
+	return sort @filtered;
+}
+
