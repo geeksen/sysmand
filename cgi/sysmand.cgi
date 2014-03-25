@@ -130,7 +130,7 @@ sub Head {
 
 <html>
 <head>
-  <title>Geeksen Mail</title>
+  <title>Geeksen Sysmand</title>
   <meta charset='utf-8'>
   <meta name='viewport' content='initial-scale=1'>
   <style type='text/css'>
