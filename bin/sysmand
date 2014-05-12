@@ -33,7 +33,7 @@ sub main
 	{
 		if (-e $path . '/run/sysmand.lock') { sleep 1; next; }
 
-		my @scripts = &read_dir_and_filter($path . '/script-enabled/', '\.pl$');
+		my @scripts = &read_dir_and_find($path . '/script-enabled/', '\.pl$');
 		if (0 == scalar @scripts) { sleep 1; next; }
 
 		system $cp  . ' /dev/null ' . $path . '/run/sysmand.lock';
@@ -51,22 +51,22 @@ sub main
 	}
 }
 
-sub read_dir_and_filter
+sub read_dir_and_find
 {
 	my $path = $_[0];
-	my $filter = $_[1];
+	my $keyword = $_[1];
 
 	opendir(my $D, $path);
 	my @files = readdir $D;
 	closedir $D;
 
-	my @filtered = ();
+	my @found = ();
 	foreach my $file (@files)
 	{
 		if ($file =~ /^\./) { next; }
-		if ($file =~ /$filter/) { push @filtered, $file; }
+		if ($file =~ /$keyword/) { push @found, $file; }
 	}
 
-	return sort @filtered;
+	return sort @found;
 }
 
