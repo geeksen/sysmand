@@ -5,17 +5,18 @@ use warnings;
 
 use POSIX;
 
-my $path = '/var/sysmand';
-
-my $echo = '/bin/echo';
-my $cp = '/bin/cp';
-my $perl = '/usr/bin/perl';
-my $rm = '/bin/rm';
+use lib qw(../lib); use sysmand;
+use vars qw(%cfg); *cfg = \%sysmand::cfg;
 
 &main;
 
 sub main
 {
+	if (0 == &sysmand::load_cfg)
+	{
+		exit;
+	}
+
 	umask 022;
 	chdir '/';
 
@@ -27,46 +28,26 @@ sub main
 	if ($pid) { exit; }
 
 	setsid;
-	system $echo . ' ' . $$ . ' > /var/run/sysmand.pid';
+	system $cfg{'sysmand::echo'} . ' ' . $$ . ' > /var/run/sysmand.pid';
 
 	while (1)
 	{
-		if (-e $path . '/script-lock/script.lock') { sleep 1; next; }
+		if (-e $cfg{'sysmand::path'} . '/script-lock/script.lock') { sleep 1; next; }
 
-		my @scripts = &read_dir_and_find($path . '/script-enabled/', '\.pl$');
+		my @scripts = &sysmand::read_dir_and_find($cfg{'sysmand::path'} . '/script-enabled/', '\.pl$');
 		if (0 == scalar @scripts) { sleep 1; next; }
 
-		system $cp  . ' /dev/null ' . $path . '/script-lock/script.lock';
+		system $cfg{'sysmand::cp'}  . ' /dev/null ' . $cfg{'sysmand::path'} . '/script-lock/script.lock';
 
 		my @scripts_sorted = sort @scripts;
 		foreach my $script (@scripts_sorted)
 		{
-			system $perl . ' ' . $path . '/script-enabled/' . $script;
-			system $rm . ' -rf ' . $path . '/script-enabled/' . $script;
+			system $cfg{'sysmand::perl'} . ' ' . $cfg{'sysmand::path'} . '/script-enabled/' . $script;
+			system $cfg{'sysmand::rm'} . ' -rf ' . $cfg{'sysmand::path'} . '/script-enabled/' . $script;
 			sleep 1;
 		}
 
-		system $rm . ' -rf ' . $path . '/script-lock/script.lock';
+		system $cfg{'sysmand::rm'} . ' -rf ' . $cfg{'sysmand::path'} . '/script-lock/script.lock';
 		sleep 1;
 	}
 }
-
-sub read_dir_and_find
-{
-	my $path = $_[0];
-	my $keyword = $_[1];
-
-	opendir(my $D, $path);
-	my @files = readdir $D;
-	closedir $D;
-
-	my @found = ();
-	foreach my $file (@files)
-	{
-		if ($file =~ /^\./) { next; }
-		if ($file =~ /$keyword/) { push @found, $file; }
-	}
-
-	return sort @found;
-}
-
