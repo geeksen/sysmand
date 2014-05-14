@@ -8,7 +8,7 @@ Daemonize sysmand
 * sudo vi /etc/init.d/sysmand
 ```
 # Provides:          sysmand
-
+..
 PATH=/sbin:/usr/sbin:/bin:/usr/bin
 DESC="System Management Daemon"
 NAME=sysmand
@@ -18,6 +18,6 @@ PIDFILE=/var/run/$NAME.pid
 SCRIPTNAME=/etc/init.d/$NAME
 ```
 
-* update-rc.d sysmand defaults 99
-* (update-rc.d -f sysmand remove)
+* sudo update-rc.d sysmand defaults 99
+* (sudo update-rc.d -f sysmand remove)
 
