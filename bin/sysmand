@@ -31,12 +31,12 @@ sub main
 
 	while (1)
 	{
-		if (-e $path . '/run/sysmand.lock') { sleep 1; next; }
+		if (-e $path . '/script-lock/script.lock') { sleep 1; next; }
 
 		my @scripts = &read_dir_and_find($path . '/script-enabled/', '\.pl$');
 		if (0 == scalar @scripts) { sleep 1; next; }
 
-		system $cp  . ' /dev/null ' . $path . '/run/sysmand.lock';
+		system $cp  . ' /dev/null ' . $path . '/script-lock/script.lock';
 
 		my @scripts_sorted = sort @scripts;
 		foreach my $script (@scripts_sorted)
@@ -46,7 +46,7 @@ sub main
 			sleep 1;
 		}
 
-		system $rm . ' -rf ' . $path . '/run/sysmand.lock';
+		system $rm . ' -rf ' . $path . '/script-lock/script.lock';
 		sleep 1;
 	}
 }
