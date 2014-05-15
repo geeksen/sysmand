@@ -1,6 +1,12 @@
 sysmand
 =======
 
+Mkdir
+-----------------
+* mkdir script-enabled
+* mkdir script-lock
+* mkdir script-log
+
 Daemonize sysmand
 -----------------
 * sudo cp /etc/init.d/skeleton /etc/init.d/sysmand
