@@ -52,5 +52,6 @@ sub main
 	system $svn . ' commit -m "auto-commit by sysmand" ' . $path . '/*.*' . $debug;
 	#print "\n";
 
+	# Remove Lock
 	system $cfg{'sysmand::rm'} . ' ' . $lock . $debug;
 }
