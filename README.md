@@ -1,11 +1,15 @@
 sysmand
 =======
 
-Mkdir
------------------
-* mkdir script-enabled
-* mkdir script-lock
-* mkdir script-log
+Install sysmand
+---------------
+* cd /var/
+* sudo git clone https://github.com/geeksen/sysmand.git
+* cd sysmand
+* sudo chown +x bin/sysmand
+* sudo mkdir script-enabled
+* sudo mkdir script-lock
+* sudo mkdir script-log
 
 Daemonize sysmand
 -----------------
@@ -26,4 +30,10 @@ SCRIPTNAME=/etc/init.d/$NAME
 
 * sudo update-rc.d sysmand defaults 99
 * (sudo update-rc.d -f sysmand remove)
+
+Run
+---
+* sudo /etc/init.d/sysmand start
+* ps -ef | grep sysmand
+* Go to http://your.web.server/mail/mail.cgi
 
