@@ -8,6 +8,7 @@ Install sysmand
 * cd sysmand
 * sudo chown +x bin/sysmand
 * sudo mkdir script-enabled
+* sudo chown www-data.www-data script-enabled
 * sudo mkdir script-lock
 
 Daemonize sysmand
