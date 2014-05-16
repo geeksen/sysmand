@@ -7,10 +7,8 @@ Install sysmand
 * sudo git clone https://github.com/geeksen/sysmand.git
 * cd sysmand
 * sudo chown +x bin/sysmand
-* sudo mkdir log
 * sudo mkdir script-enabled
 * sudo mkdir script-lock
-* sudo mkdir script-log
 
 Daemonize sysmand
 -----------------
