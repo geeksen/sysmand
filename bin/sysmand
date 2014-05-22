@@ -5,18 +5,16 @@ use warnings;
 
 use POSIX;
 
-use lib qw(../lib); use sysmand;
-use vars qw(%cfg); *cfg = \%sysmand::cfg;
+my $path = '/var/sysmand';
+my $echo = '/bin/echo';
+my $cp = '/bin/cp';
+my $perl = '/usr/bin/perl';
+my $rm = '/bin/rm';
 
 &main;
 
 sub main
 {
-	if (0 == &sysmand::load_cfg)
-	{
-		exit;
-	}
-
 	umask 022;
 	chdir '/';
 
@@ -28,26 +26,36 @@ sub main
 	if ($pid) { exit; }
 
 	setsid;
-	system $cfg{'sysmand::echo'} . ' ' . $$ . ' > /var/run/sysmand.pid';
+	system $echo . ' ' . $$ . ' > /var/run/sysmand.pid';
 
 	while (1)
 	{
-		if (-e $cfg{'sysmand::path'} . '/script-lock/script.lock') { sleep 1; next; }
+		if (-e $path . '/script-lock/script.lock') { sleep 1; next; }
 
-		my @scripts = &sysmand::read_dir_and_find($cfg{'sysmand::path'} . '/script-enabled/', '\.pl$');
+		opendir my $D, $path . '/script-enabled/' or die $!;
+		my @files = readdir $D;
+		closedir $D;
+
+		my @scripts = ();
+		foreach my $file (@files)
+		{
+			if ($file =~ /^\./) { next; }
+			if ($file =~ /\.pl/) { push @scripts, $file; }
+		}
+
 		if (0 == scalar @scripts) { sleep 1; next; }
 
-		system $cfg{'sysmand::cp'}  . ' /dev/null ' . $cfg{'sysmand::path'} . '/script-lock/script.lock';
+		system $cp  . ' /dev/null ' . $path . '/script-lock/script.lock';
 
 		my @scripts_sorted = sort @scripts;
 		foreach my $script (@scripts_sorted)
 		{
-			system $cfg{'sysmand::perl'} . ' ' . $cfg{'sysmand::path'} . '/script-enabled/' . $script;
-			system $cfg{'sysmand::rm'} . ' -rf ' . $cfg{'sysmand::path'} . '/script-enabled/' . $script;
+			system $perl . ' ' . $path . '/script-enabled/' . $script;
+			system $rm . ' -rf ' . $path . '/script-enabled/' . $script;
 			sleep 1;
 		}
 
-		system $cfg{'sysmand::rm'} . ' -rf ' . $cfg{'sysmand::path'} . '/script-lock/script.lock';
+		system $rm . ' -rf ' . $path . '/script-lock/script.lock';
 		sleep 1;
 	}
 }
