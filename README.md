@@ -7,6 +7,8 @@ Install sysmand
 * sudo git clone https://github.com/geeksen/sysmand.git
 * cd sysmand
 * sudo chown +x bin/sysmand
+* sudo chown www-data.www-data cfg
+* sudo chown www-data.www-data cfg/*.cfg
 * sudo mkdir script-enabled
 * sudo chown www-data.www-data script-enabled
 * sudo mkdir script-lock
