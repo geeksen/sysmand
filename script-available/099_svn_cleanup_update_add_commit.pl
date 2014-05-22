@@ -3,13 +3,12 @@
 use strict;
 use warnings;
 
-use lib qw(../lib); use sysmand;
-use vars qw(%cfg); *cfg = \%sysmand::cfg;
-
-my $svn = '/usr/bin/svn';
-
 my $path = '/var/www-data/game01';
 my $lock = '/var/www-data/game01-lock/game01.lock';
+
+my $cp = '/bin/cp';
+my $rm = '/bin/rm';
+my $svn = '/usr/bin/svn';
 
 &main;
 
@@ -21,16 +20,6 @@ sub main
 		$debug = '';
 	}
 
-	if (0 == &sysmand::load_cfg)
-	{
-		if ('' ne $debug)
-		{
-			print "&sysmand::load_cfg failed\n";
-			return;
-		}
-		exit;
-	}
-
 	# Check Lock
 	if (-e $lock)
 	{
@@ -38,7 +27,7 @@ sub main
 	}
 
 	# Create Lock
-	system $cfg{'sysmand::cp'} . ' /dev/null '  . $lock . $debug;
+	system $cp . ' /dev/null '  . $lock . $debug;
 
 	system $svn . ' cleanup ' . $path . $debug;
 	#print "\n";
@@ -53,5 +42,5 @@ sub main
 	#print "\n";
 
 	# Remove Lock
-	system $cfg{'sysmand::rm'} . ' ' . $lock . $debug;
+	system $rm . ' ' . $lock . $debug;
 }
