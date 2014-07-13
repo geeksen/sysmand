@@ -31,6 +31,7 @@ sub main
 	while (1)
 	{
 		if (-e $path . '/script-lock/script.lock') { sleep 1; next; }
+		system $cp  . ' /dev/null ' . $path . '/script-lock/script.lock';
 
 		opendir my $D, $path . '/script-enabled/' or die $!;
 		my @files = readdir $D;
@@ -44,8 +45,6 @@ sub main
 		}
 
 		if (0 == scalar @scripts) { sleep 1; next; }
-
-		system $cp  . ' /dev/null ' . $path . '/script-lock/script.lock';
 
 		my @scripts_sorted = sort @scripts;
 		foreach my $script (@scripts_sorted)
