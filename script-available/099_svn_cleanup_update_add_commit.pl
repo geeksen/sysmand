@@ -3,8 +3,8 @@
 use strict;
 use warnings;
 
-my $path = '/var/www-data/game01';
-my $lock = '/var/www-data/game01-lock/game01.lock';
+my $path = '/var/www-data/site01';
+my $lock = '/var/www-data/site01-lock/site01.lock';
 
 my $cp = '/bin/cp';
 my $rm = '/bin/rm';
